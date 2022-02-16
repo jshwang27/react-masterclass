@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useLocation } from "react-router-dom";
+import {
+  useParams,
+  Route,
+  Switch,
+  useLocation,
+  useRouteMatch,
+} from "react-router";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+import Chart from "./Chart";
+import Price from "./Price";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -26,6 +34,52 @@ const Title = styled.h1`
   color: ${(props) => props.theme.accentColor};
 `;
 
+const Overview = styled.div`
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
+`;
+
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+
+const Description = styled.p`
+  margin: 20px 0px;
+`;
+
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{ isActive: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 7px 0px;
+  border-radius: 10px;
+  color: ${(props) =>
+    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  a {
+    display: block;
+  }
+`;
+
 interface RouteParams {
   coinId: string;
 }
@@ -34,6 +88,10 @@ interface RouteState {
   name: string;
 }
 
+/*
+인터페이스 정의 시 크롬의 기능을 사용해 키값과 타입값을 복사해온 후
+단축키를 사용해서 아래처럼 만든다.
+*/
 interface InfoData {
   id: string;
   name: string;
@@ -68,7 +126,9 @@ interface PriceData {
   beta_value: number;
   first_data_at: string;
   last_updated: string;
-  quotes: IUSD[]; // type이 object일 때 interface로 따로 한 부분
+  quotes: {
+    USD: IUSD[];
+  }; // type이 object일 때 interface로 따로 한 부분
 }
 
 interface IUSD {
@@ -97,7 +157,10 @@ function Coin() {
   const { state } = useLocation<RouteState>();
 
   const [info, setInfo] = useState<InfoData>();
-  const [price, setPrice] = useState<PriceData>();
+  const [priceInfo, setPrice] = useState<PriceData>();
+  const [quotes, setQuotes] = useState<IUSD>();
+  const priceMatch = useRouteMatch("/:coinId/price");
+  const chartMatch = useRouteMatch("/:coinId/chart");
 
   useEffect(() => {
     (async () => {
@@ -109,15 +172,72 @@ function Coin() {
       ).json();
       setInfo(infoData);
       setPrice(priceData);
+      setQuotes(priceData.quotes?.USD);
+      setLoading(false);
     })();
-  }, []);
+  }, [coinId]);
 
   return (
     <Container>
       <Header>
-        <Title>{state?.name || "Loading.."}</Title>
+        <Title>
+          {state?.name ? state.name : loading ? "Loading..." : info?.name}
+        </Title>
       </Header>
-      {loading ? <Loader>Loading...</Loader> : null}
+      {loading ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>RANK : </span>
+              <span>{info?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>SYMBOL: </span>
+              <span>${info?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>OPEN SOURCE : </span>
+              <span>{info?.open_source ? "YES" : "NO"}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>
+            <span>{info?.description}</span>
+          </Description>
+          <Overview>
+            <OverviewItem>
+              <span>TOTAL SUPLY : </span>
+              <span>{priceInfo?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>MAX SUPPLY : </span>
+              <span>{priceInfo?.max_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>USD :</span>
+              <span>{quotes?.price}</span>
+            </OverviewItem>
+          </Overview>
+          <Tabs>
+            <Tab isActive={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch !== null}>
+              <Link to={`/:coinId/price`}>Price</Link>
+            </Tab>
+          </Tabs>
+
+          <Switch>
+            <Route path={`/:coinId/price`}>
+              <Price />
+            </Route>
+            <Route path={`/${coinId}/chart`}>
+              <Chart />
+            </Route>
+          </Switch>
+        </>
+      )}
     </Container>
   );
 }

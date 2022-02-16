@@ -66,7 +66,6 @@ a{
 function App() {
   return (
     <>
-      {" "}
       {/* fragment-component : 쓸데없는 div 등을 붙이는 대신 사용 */}
       <GlobalStyle />
       <Router />
