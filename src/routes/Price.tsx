@@ -1,4 +1,3 @@
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const Overview = styled.div`
@@ -20,9 +19,6 @@ const OverviewItem = styled.div`
     margin-bottom: 5px;
   }
 `;
-interface PriceProps {
-  coinId: string;
-}
 interface PriceData {
   id: string;
   name: string;
@@ -61,29 +57,27 @@ interface IQUOTES {
   volume_24h_change_24h: number;
 }
 
-interface RouteState {
-  data: PriceData;
+interface PriceProps {
+  coinId: string;
+  tickersData: PriceData | undefined;
 }
 
-function Price({ coinId }: PriceProps) {
-  const { state } = useLocation<RouteState>();
-
-  const ticker: IPRICE | undefined = state?.data.quotes;
+function Price({ coinId, tickersData }: PriceProps) {
   return (
     <>
-      <>Last Update : {state?.data.last_updated}</>
+      <>Last Update : {tickersData?.last_updated}</>
       <Overview>
         <OverviewItem>
           <span>USD :</span>
-          <span>{ticker?.USD.price.toFixed(3)}</span>
+          <span>{tickersData?.quotes.USD.price}</span>
         </OverviewItem>
         <OverviewItem>
           <span>KRW :</span>
-          <span>{ticker?.KRW.price.toFixed(3)}</span>
+          <span>{tickersData?.quotes.KRW.price}</span>
         </OverviewItem>
         <OverviewItem>
           <span>JPY :</span>
-          <span>{ticker?.JPY.price.toFixed(3)}</span>
+          <span>{tickersData?.quotes.JPY.price}</span>
         </OverviewItem>
       </Overview>
     </>

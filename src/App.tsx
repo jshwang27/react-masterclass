@@ -74,9 +74,8 @@ function App() {
     <>
       {/* fragment-component : 쓸데없는 div 등을 붙이는 대신 사용 */}
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-        <button onClick={toggleDark}>Toggle Mode</button>
         <GlobalStyle />
-        <Router />
+        <Router isDark={isDark} toggleDark={toggleDark} />
       </ThemeProvider>
     </>
   );

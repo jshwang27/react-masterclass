@@ -156,6 +156,7 @@ interface PriceData {
 interface IPRICE {
   USD: IQUOTES;
   KRW: IQUOTES;
+  JPY: IQUOTES;
 }
 interface IQUOTES {
   ath_date: string;
@@ -177,7 +178,11 @@ interface IQUOTES {
   volume_24h_change_24h: number;
 }
 
-function Coin() {
+interface ICoinProps {
+  isDark: boolean;
+}
+
+function Coin({ isDark }: ICoinProps) {
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
 
@@ -193,7 +198,6 @@ function Coin() {
     () => fetchCoinTickers(coinId),
     { refetchInterval: 5000 }
   );
-  const ticker: IPRICE | undefined = tickersData?.quotes;
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
   // const [priceInfo, setPrice] = useState<PriceData>();
@@ -267,24 +271,24 @@ function Coin() {
               <Link to={`/${coinId}/chart`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-              {/* <Link to={`/${coinId}/price`}>Price</Link> */}
-              <Link
+              <Link to={`/${coinId}/price`}>Price</Link>
+              {/* <Link
                 to={{
                   pathname: `/${coinId}/price`,
                   state: { data: tickersData },
                 }}
               >
                 Price
-              </Link>
+              </Link> */}
             </Tab>
           </Tabs>
 
           <Switch>
             <Route path={`/:coinId/price`}>
-              <Price coinId={coinId} />
+              <Price coinId={coinId} tickersData={tickersData} />
             </Route>
             <Route path={`/${coinId}/chart`}>
-              <Chart coinId={coinId} />
+              <Chart isDark={isDark} coinId={coinId} />
             </Route>
           </Switch>
         </>

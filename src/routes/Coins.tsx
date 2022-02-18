@@ -65,7 +65,11 @@ const Loader = styled.span`
   display: block;
 `;
 
-function Coins() {
+interface ICoinsProps {
+  toggleDark: () => void;
+}
+
+function Coins({ toggleDark }: ICoinsProps) {
   const { isLoading, data } = useQuery<ICOIN[]>("allCoins", fetchCoins);
   // const [coins, setCoins] = useState<ICOIN[]>([]);
   // const [loading, setLoading] = useState(true);
@@ -88,6 +92,7 @@ function Coins() {
       </HelmetProvider>
       <Header>
         <Title>코인</Title>
+        <button onClick={toggleDark}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
