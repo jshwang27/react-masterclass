@@ -1,4 +1,6 @@
 import { fetchCoinInfo, fetchCoinTickers } from "api";
+//import { Helmet } from "react-helmet"; 이 부분 warning 에러 발생하여 아래처럼 작성함
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import {
@@ -9,7 +11,6 @@ import {
   useRouteMatch,
 } from "react-router";
 import { Link } from "react-router-dom";
-import { json } from "stream/consumers";
 import styled from "styled-components";
 import Chart from "./Chart";
 import Price from "./Price";
@@ -129,51 +130,49 @@ interface PriceData {
   beta_value: number;
   first_data_at: string;
   last_updated: string;
+  quotes: { USD: IUSD }; // type이 object일 때 interface로 따로 한 부분
   // quotes: {
-  //   USD: IUSD[];
-  // }; // type이 object일 때 interface로 따로 한 부분
-  quotes: {
-    USD: {
-      ath_date: string;
-      ath_price: number;
-      market_cap: number;
-      market_cap_change_24h: number;
-      percent_change_1h: number;
-      percent_change_1y: number;
-      percent_change_6h: number;
-      percent_change_7d: number;
-      percent_change_12h: number;
-      percent_change_15m: number;
-      percent_change_24h: number;
-      percent_change_30d: number;
-      percent_change_30m: number;
-      percent_from_price_ath: number;
-      price: number;
-      volume_24h: number;
-      volume_24h_change_24h: number;
-    };
-  };
+  //   USD: {
+  //     ath_date: string;
+  //     ath_price: number;
+  //     market_cap: number;
+  //     market_cap_change_24h: number;
+  //     percent_change_1h: number;
+  //     percent_change_1y: number;
+  //     percent_change_6h: number;
+  //     percent_change_7d: number;
+  //     percent_change_12h: number;
+  //     percent_change_15m: number;
+  //     percent_change_24h: number;
+  //     percent_change_30d: number;
+  //     percent_change_30m: number;
+  //     percent_from_price_ath: number;
+  //     price: number;
+  //     volume_24h: number;
+  //     volume_24h_change_24h: number;
+  //   };
+  // };
 }
 
-// interface IUSD {
-//   ath_date: string;
-//   ath_price: number;
-//   market_cap: number;
-//   market_cap_change_24h: number;
-//   percent_change_1h: number;
-//   percent_change_1y: number;
-//   percent_change_6h: number;
-//   percent_change_7d: number;
-//   percent_change_12h: number;
-//   percent_change_15m: number;
-//   percent_change_24h: number;
-//   percent_change_30d: number;
-//   percent_change_30m: number;
-//   percent_from_price_ath: number;
-//   price: number;
-//   volume_24h: number;
-//   volume_24h_change_24h: number;
-// }
+interface IUSD {
+  ath_date: string;
+  ath_price: number;
+  market_cap: number;
+  market_cap_change_24h: number;
+  percent_change_1h: number;
+  percent_change_1y: number;
+  percent_change_6h: number;
+  percent_change_7d: number;
+  percent_change_12h: number;
+  percent_change_15m: number;
+  percent_change_24h: number;
+  percent_change_30d: number;
+  percent_change_30m: number;
+  percent_from_price_ath: number;
+  price: number;
+  volume_24h: number;
+  volume_24h_change_24h: number;
+}
 
 function Coin() {
   const { coinId } = useParams<RouteParams>();
@@ -188,9 +187,10 @@ function Coin() {
   );
   const { isLoading: tickersLoading, data: tickersData } = useQuery<PriceData>(
     ["tickers", coinId],
-    () => fetchCoinTickers(coinId)
+    () => fetchCoinTickers(coinId),
+    { refetchInterval: 5000 }
   );
-
+  const ticker: IUSD | undefined = tickersData?.quotes.USD;
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
   // const [priceInfo, setPrice] = useState<PriceData>();
@@ -210,10 +210,18 @@ function Coin() {
   //     setLoading(false);
   //   })();
   // }, [coinId]);
+
   const loading = infoLoading || tickersLoading;
 
   return (
     <Container>
+      <HelmetProvider>
+        <Helmet>
+          <title>
+            {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
+          </title>
+        </Helmet>
+      </HelmetProvider>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
@@ -251,9 +259,10 @@ function Coin() {
             </OverviewItem>
             <OverviewItem>
               <span>USD :</span>
-              <span>{tickersData?.quotes.USD.price}</span>
+              <span>{ticker?.price}</span>
             </OverviewItem>
           </Overview>
+
           <Tabs>
             <Tab isActive={chartMatch !== null}>
               <Link to={`/${coinId}/chart`}>Chart</Link>

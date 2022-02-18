@@ -1,5 +1,8 @@
+import { useState } from "react";
 import Router from "Router";
 import { createGlobalStyle } from "styled-components";
+import { ThemeProvider } from "styled-components";
+import { lightTheme, darkTheme } from "theme";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
@@ -64,11 +67,17 @@ a{
 }
 `;
 function App() {
+  const [isDark, setIsDark] = useState(false);
+  const toggleDark = () => setIsDark((current) => !current);
+
   return (
     <>
       {/* fragment-component : 쓸데없는 div 등을 붙이는 대신 사용 */}
-      <GlobalStyle />
-      <Router />
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <button onClick={toggleDark}>Toggle Mode</button>
+        <GlobalStyle />
+        <Router />
+      </ThemeProvider>
     </>
   );
 }
