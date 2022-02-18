@@ -33,6 +33,11 @@ const Loader = styled.span`
   display: block;
 `;
 
+const BackButton = styled.h4`
+  font-size: 20px;
+  margin: 5px 0px;
+`;
+
 const Title = styled.h1`
   font-size: 40px;
   color: ${(props) => props.theme.accentColor};
@@ -178,11 +183,9 @@ interface IQUOTES {
   volume_24h_change_24h: number;
 }
 
-interface ICoinProps {
-  isDark: boolean;
-}
+interface ICoinProps {}
 
-function Coin({ isDark }: ICoinProps) {
+function Coin({}: ICoinProps) {
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
 
@@ -229,6 +232,7 @@ function Coin({ isDark }: ICoinProps) {
           </title>
         </Helmet>
       </HelmetProvider>
+      <BackButton>◀︎Back ◁Back</BackButton>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}
@@ -288,7 +292,7 @@ function Coin({ isDark }: ICoinProps) {
               <Price coinId={coinId} tickersData={tickersData} />
             </Route>
             <Route path={`/${coinId}/chart`}>
-              <Chart isDark={isDark} coinId={coinId} />
+              <Chart coinId={coinId} />
             </Route>
           </Switch>
         </>

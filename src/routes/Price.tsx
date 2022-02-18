@@ -69,15 +69,15 @@ function Price({ coinId, tickersData }: PriceProps) {
       <Overview>
         <OverviewItem>
           <span>USD :</span>
-          <span>{tickersData?.quotes.USD.price}</span>
+          <span>{tickersData?.quotes.USD.price.toFixed(3)}</span>
         </OverviewItem>
         <OverviewItem>
           <span>KRW :</span>
-          <span>{tickersData?.quotes.KRW.price}</span>
+          <span>{tickersData?.quotes.KRW.price.toFixed(3)}</span>
         </OverviewItem>
         <OverviewItem>
           <span>JPY :</span>
-          <span>{tickersData?.quotes.JPY.price}</span>
+          <span>{tickersData?.quotes.JPY.price.toFixed(3)}</span>
         </OverviewItem>
       </Overview>
     </>

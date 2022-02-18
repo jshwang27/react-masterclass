@@ -22,14 +22,15 @@ const Header = styled.header`
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: white;
+  background-color: "#262626";
   color: ${(props) => props.theme.textColor};
+  border: 1px #f7f7f7 solid;
   border-radius: 15px;
   margin-bottom: 10px;
   a {
     display: flex;
     align-items: center;
-    padding: 20px;
+    padding: 12px;
     transition: color 0.2s ease-in;
   }
   &:hover {
@@ -41,7 +42,7 @@ const Coin = styled.li`
 
 const Title = styled.h1`
   font-size: 40px;
-  color: ${(props) => props.theme.accentColor};
+  color: ${(props) => props.theme.textColor};
 `;
 
 const Img = styled.img`
@@ -65,11 +66,9 @@ const Loader = styled.span`
   display: block;
 `;
 
-interface ICoinsProps {
-  toggleDark: () => void;
-}
+interface ICoinsProps {}
 
-function Coins({ toggleDark }: ICoinsProps) {
+function Coins({}: ICoinsProps) {
   const { isLoading, data } = useQuery<ICOIN[]>("allCoins", fetchCoins);
   // const [coins, setCoins] = useState<ICOIN[]>([]);
   // const [loading, setLoading] = useState(true);
@@ -92,7 +91,6 @@ function Coins({ toggleDark }: ICoinsProps) {
       </HelmetProvider>
       <Header>
         <Title>코인</Title>
-        <button onClick={toggleDark}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>

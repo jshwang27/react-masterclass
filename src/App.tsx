@@ -1,4 +1,6 @@
+import { isDarkAtom } from "atoms";
 import { useState } from "react";
+import { useRecoilValue } from "recoil";
 import Router from "Router";
 import { createGlobalStyle } from "styled-components";
 import { ThemeProvider } from "styled-components";
@@ -67,15 +69,15 @@ a{
 }
 `;
 function App() {
-  const [isDark, setIsDark] = useState(false);
-  const toggleDark = () => setIsDark((current) => !current);
-
+  // const [isDark, setIsDark] = useState(false);
+  // const toggleDark = () => setIsDark((current) => !current);
+  const isDark = useRecoilValue(isDarkAtom);
   return (
     <>
       {/* fragment-component : 쓸데없는 div 등을 붙이는 대신 사용 */}
       <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
         <GlobalStyle />
-        <Router isDark={isDark} toggleDark={toggleDark} />
+        <Router />
       </ThemeProvider>
     </>
   );
