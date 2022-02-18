@@ -130,7 +130,7 @@ interface PriceData {
   beta_value: number;
   first_data_at: string;
   last_updated: string;
-  quotes: { USD: IUSD }; // type이 object일 때 interface로 따로 한 부분
+  quotes: IPRICE; // type이 object일 때 interface로 따로 한 부분
   // quotes: {
   //   USD: {
   //     ath_date: string;
@@ -153,8 +153,11 @@ interface PriceData {
   //   };
   // };
 }
-
-interface IUSD {
+interface IPRICE {
+  USD: IQUOTES;
+  KRW: IQUOTES;
+}
+interface IQUOTES {
   ath_date: string;
   ath_price: number;
   market_cap: number;
@@ -190,7 +193,7 @@ function Coin() {
     () => fetchCoinTickers(coinId),
     { refetchInterval: 5000 }
   );
-  const ticker: IUSD | undefined = tickersData?.quotes.USD;
+  const ticker: IPRICE | undefined = tickersData?.quotes;
   // const [loading, setLoading] = useState(true);
   // const [info, setInfo] = useState<InfoData>();
   // const [priceInfo, setPrice] = useState<PriceData>();
@@ -257,10 +260,6 @@ function Coin() {
               <span>MAX SUPPLY : </span>
               <span>{tickersData?.max_supply}</span>
             </OverviewItem>
-            <OverviewItem>
-              <span>USD :</span>
-              <span>{ticker?.price}</span>
-            </OverviewItem>
           </Overview>
 
           <Tabs>
@@ -268,13 +267,21 @@ function Coin() {
               <Link to={`/${coinId}/chart`}>Chart</Link>
             </Tab>
             <Tab isActive={priceMatch !== null}>
-              <Link to={`/:coinId/price`}>Price</Link>
+              {/* <Link to={`/${coinId}/price`}>Price</Link> */}
+              <Link
+                to={{
+                  pathname: `/${coinId}/price`,
+                  state: { data: tickersData },
+                }}
+              >
+                Price
+              </Link>
             </Tab>
           </Tabs>
 
           <Switch>
             <Route path={`/:coinId/price`}>
-              <Price />
+              <Price coinId={coinId} />
             </Route>
             <Route path={`/${coinId}/chart`}>
               <Chart coinId={coinId} />

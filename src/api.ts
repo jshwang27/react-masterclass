@@ -11,8 +11,8 @@ export function fetchCoinInfo(coinId: string) {
 }
 
 export function fetchCoinTickers(coinId: string) {
-  return fetch(`${BASE_URL}/tickers/${coinId}`).then((response) =>
-    response.json()
+  return fetch(`${BASE_URL}/tickers/${coinId}?quotes=USD,KRW,JPY`).then(
+    (response) => response.json()
   );
 }
 
