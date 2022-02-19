@@ -1,5 +1,10 @@
+import { isDarkAtom } from "atoms";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import Router from "Router";
 import { createGlobalStyle } from "styled-components";
-import ToDoList from "./ToDoList";
+import { ThemeProvider } from "styled-components";
+import { lightTheme, darkTheme } from "theme";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
@@ -64,10 +69,16 @@ a{
 }
 `;
 function App() {
+  // const [isDark, setIsDark] = useState(false);
+  // const toggleDark = () => setIsDark((current) => !current);
+  const isDark = useRecoilValue(isDarkAtom);
   return (
     <>
-      <GlobalStyle />
-      <ToDoList />
+      {/* fragment-component : 쓸데없는 div 등을 붙이는 대신 사용 */}
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <Router />
+      </ThemeProvider>
     </>
   );
 }
