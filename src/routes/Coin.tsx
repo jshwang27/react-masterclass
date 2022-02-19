@@ -14,6 +14,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Chart from "./Chart";
 import Price from "./Price";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "atoms";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -186,6 +188,8 @@ interface IQUOTES {
 interface ICoinProps {}
 
 function Coin({}: ICoinProps) {
+  const isDark = useRecoilValue(isDarkAtom);
+
   const { coinId } = useParams<RouteParams>();
   const { state } = useLocation<RouteState>();
 
@@ -232,7 +236,7 @@ function Coin({}: ICoinProps) {
           </title>
         </Helmet>
       </HelmetProvider>
-      <BackButton>◀︎Back ◁Back</BackButton>
+      <BackButton>{isDark ? "◁" : "◀︎"}Back</BackButton>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : infoData?.name}

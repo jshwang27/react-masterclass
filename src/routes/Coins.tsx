@@ -5,6 +5,8 @@ import { useQuery } from "react-query";
 import { fetchCoins } from "api";
 //import { Helmet } from "react-helmet"; 이 부분 warning 에러 발생하여 아래처럼 작성함
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "atoms";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -22,15 +24,15 @@ const Header = styled.header`
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: "#262626";
+  background-color: ${(props) => props.theme.bgColor};
   color: ${(props) => props.theme.textColor};
-  border: 1px #f7f7f7 solid;
+  border: ${(props) => props.theme.border};
   border-radius: 15px;
   margin-bottom: 10px;
   a {
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: 10px;
     transition: color 0.2s ease-in;
   }
   &:hover {
@@ -69,6 +71,8 @@ const Loader = styled.span`
 interface ICoinsProps {}
 
 function Coins({}: ICoinsProps) {
+  const setDarkAtom = useSetRecoilState(isDarkAtom);
+  const toggleDarkAtom = () => setDarkAtom((prev) => !prev);
   const { isLoading, data } = useQuery<ICOIN[]>("allCoins", fetchCoins);
   // const [coins, setCoins] = useState<ICOIN[]>([]);
   // const [loading, setLoading] = useState(true);
@@ -91,6 +95,7 @@ function Coins({}: ICoinsProps) {
       </HelmetProvider>
       <Header>
         <Title>코인</Title>
+        <button onClick={toggleDarkAtom}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
